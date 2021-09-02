@@ -14,14 +14,8 @@ library(psych)                # principal component analysis
 source("customplots.r")       # correlation heatmaps
 ```
 
-# Load GLES 2017 data
+# Load GLES 2016-2020 panel data
 
-## Post-election cross-section
-```{r, warning = FALSE}
-cs <- read.spss("ZA6801_de_v4-0-1.sav", to.data.frame = TRUE)
-```
-
-## Panel
 ```{r, warning = FALSE}
 panel.w1 <- read.spss("ZA6838_w1to9_sA_v4-0-0.sav", to.data.frame = TRUE)   # Waves 1-9 dataset
 panel.w12 <- read.spss("ZA6838_w12_sA_v4-0-0.sav", to.data.frame = TRUE)    # Wave 12 dataset
@@ -32,26 +26,9 @@ panel <- inner_join(panel.w1, panel.w12, by = "lfdn")   # Merge the two datasets
 panel.vars <- data.frame(names(panel))                  # Extract list of variable names (for reference / exploration)
 ```
 
-# Derive Variables
+# Derive variables
 
-## Psychometrics (cross-section data)
-```{r}
-cs <- cs %>%
-  mutate(
-    Openness = (as.numeric(q123e) + 6 - as.numeric(q123j)) / 2,
-    Agreeableness = (as.numeric(q123b) + 6 - as.numeric(q123g)) / 2,
-    Extraversion = (as.numeric(q123f) + 6 - as.numeric(q123a)) / 2,
-    Conscientiousness = (as.numeric(q123c) + 6 - as.numeric(q123h)) / 2,
-    Neuroticism = (as.numeric(q123i) + 6 - as.numeric(q123d)) / 2)
-
-cs.psychometrics <- cs %>% select(Openness, Agreeableness, Extraversion, Conscientiousness, Neuroticism)
-
-boxplot(cs.psychometrics)
-rcorr(as.matrix(cs.psychometrics), type = "spearman")
-plot_corheat(cs.psychometrics, method = "spearman")
-```
-
-## Psychometrics (panel data)
+## Personality trait scores
 ```{r}
 panel <- panel %>%
   # Turn factors for TIPI items into numerics and make exception codes negative
@@ -101,7 +78,7 @@ panel <- panel %>%
   mutate(RiskAversion = (12 - replace(RiskAversion, RiskAversion < 1, NA)) %>% scales::rescale(c(1,5)))
 ```
 
-## Climate policy attitudes (panel data)
+## Climate policy attitudes
 ```{r}
 panel <- panel %>% 
   # Turn factors for policy attitudes into numerics and make exception codes negative
@@ -120,7 +97,7 @@ panel <- panel %>%
   mutate(Priority = (8 - Priority) %>% scales::rescale(c(1,5)))
 ```
 
-## Controls (panel data)
+## Controls
 ```{r}
 panel <- panel %>%
   # Turn factors for controls into numerics and make exception codes negative
@@ -153,7 +130,7 @@ panel.final <- panel %>% select(
   Age, LeftRight, Female, Education)
 ```
 
-# Generate descriptive and bivariate statistics
+# Descriptive and bivariate statistics
 
 ## Distribution boxplots
 
@@ -579,6 +556,7 @@ mod4.log.anova <- anova(mod4.log.co, mod4.log, test = "LRT")
 mod4.log.anova
 ```
 
-```{r echo=FALSE}
+# Export results
+```{r}
 save(file = "results.RData", list = setdiff(ls(), c("panel", "panel.w1", "panel.w12")))
 ```
