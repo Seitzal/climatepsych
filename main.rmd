@@ -1,0 +1,81 @@
+---
+output:
+  pdf_document:
+    includes:
+      in_header: preamble.tex
+      before_body: titlepage.tex
+    keep_tex:  true
+    extra_dependencies: ["booktabs", "threeparttable"]
+bibliography: bibliography.bib
+link-citations: true
+geometry: "left=2cm,right=3cm,top=3cm,bottom=3cm"
+papersize: a4
+fontsize: 12pt
+indent: true
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(gtools)
+load("results.RData")
+round_ <- function(x){round(x, digits = 4)}
+```
+
+\tableofcontents
+\newpage
+\onehalfspacing
+
+# Introduction
+
+Climate change, its consequences and the necessity to limit them are arguably the most important political challenge facing governments in the twenty-first century. According to the latest estimates compiled by the intergovernmental panel on climate change (IPCC), the consequences of global warming exceeding 1.5°C or even 2°C appear to include vast increases in the frequency and severity of extreme weather events such as floods, heat waves and fire weather [@ipcc2021a 23], and these effects are irreversible for centuries or even millenia (Ibid., 28). To prevent this, human CO$_2$ emissions must be reduced to net zero around 2050 [@ipcc2018 12]. This goal of carbon neutrality can only be reached through ambitious and economically significant policy measures, which are often politically divisive. In democracies, citizens decide, either directly or indirectly, whether and when such climate policies are adopted. Thus, the attitudes of these citizens towards climate protection in general as well as individual policy projects, such as carbon taxation and measures towards energy transition, are essential to the global fight against climate change. Even though over 90% of citizens in most countries now accept human-made climate change as a reality [@charlton2019], specific policies designed to address it are far more contested. Examples such as the "yellow vests" protest wave in France show that while many citizens may agree with the general problem statement, significant measures such as increased taxation of goods with a high carbon footprint are not guaranteed to enjoy widespread support.
+
+Previous works addressing individual-level attitudes towards climate change and environmental policies have focused on the influence of socio-demographic factors such as age, gender, income and level of education [@patchen2006; @douenne2020; @colvin2021]. Others have investigated individuals' perception of the risks and fairness of specific policies [cf. @drews2016 6-8], as well as the relationship between general political orientations (political trust, ideological leanings, party orientation) and various expressions of political environmentalism [@patchen2006; @dalton2009; @dunlap2001; @colvin2021]. While all of these variables can to some extent explain variations in the level of support for climate policies, they currently only offer partial explanations of the phenomenon, and there are still many missing puzzle pieces. With the additional urgency that the climate issue has received in the recent past, it seems relevant to investigate other potential sources of variance. One such source might be an inherent effect of different individual personalities. In trait psychology, it has become widely accepted that personality traits can be structured into five basic factors, often referred to as the "Big Five" [@goldberg1990; @mccrae1987; @mccrae2003]. These factors (Extraversion, Agreeableness, Conscientiousness, Neuroticism, and Openness to Experience) have already been shown to predict individual-level environmentalism or environmentally-significant behaviours [@hirsh2010; @milfont2012; @brick2016]. Recently, the widespread adoption of the Big Five model in political science following @mondak2010 has led to a surge in publications linking personality traits to various political attitudes and behaviours [cf. @gerber2011 for an overview; more recent examples include @bakker2016; @fatke2019; @aichholzer2021].
+
+This paper aims to connect the two above-mentioned applications of the Big Five model by relating it to political environmentalism, which is conceptualized as an individual's support for ambitious political measures against climate change, and their tendency to prioritize environmental over economic concerns in the political sphere. How do basic personality traits influence individual support for ambitious climate policy? To answer that question, I pursue a two-step approach. First, I review previous findings in the fields of trait psychology, political psychology and political sociology about the determinants of political environmentalism and the relationship between the Big Five and political attitudes, as well as environmentalism and environmentally significant behaviours. Since my research interest in the later chapters is mostly deductive, I am particularly interested in theoretical arguments and causal hypotheses. Based on this literature review, I then formulate and test a set of hypotheses regarding the influence of the individual personality traits on four dependent variables: One general measure of the degree to which individuals prioritize climate protection over economic concerns, and three measures of support for specific climate-related policies (A tax on CO$_2$ emissions, a ban on new registration of combustion engine cars after 2030, and the continued use of nuclear power as an energy source). In addition to the Big Five model, I include an additional sixth trait construct, measuring an individual's tendency to embrace or eschew risk. I analyse survey data from the German Longitudinal Election Study 2016-2020 panel [@gles2021] to test the hypotheses empirically, using four multivariate OLS regression models. Results indicate that... !!INSERT!!
+
+The paper contributes to the psychological findings on the antecedents of environmentalist attitudes and environmentally significant behaviour by adding an explicitly political dimension (support for far-reaching policies, rather than micro-level behaviours of private citizens). In the field of political science, it adds to a growing body of research regarding the influence of citizens' innate personality traits on their political attitudes, values, and behaviours. Furthermore, insights into the personality traits of political environmentalists or anti-environmentalists may help policy makers better understand how to successfully communicate effective climate policies to voters and gain support for such endeavours.
+
+# 1 Literature Review
+
+## 1.1 Political support for measures against climate change
+
+## 1.2 Personality traits and environmentalism
+
+# 2 Empirical analysis
+
+## 2.1 Dataset
+
+## 2.2 Hypotheses
+
+## 2.3 Methods
+
+## 2.4 Results
+
+### 2.4.1 Bivariate Correlations
+
+This chapter references table \ref{table:1}.
+
+```{r table 1, child = 'table1.rmd'}
+```
+
+### 2.4.2 Multivariate Model
+
+This chapter references table \ref{table:2}.
+
+```{r table 2, child = 'table2.rmd'}
+```
+
+### 2.4.3 Discussion
+
+# Conclusion
+
+\newpage
+
+# References
+
+<div id="refs"></div>
+
+\
+\noindent
+All web sources last accessed on 25 August 2021.

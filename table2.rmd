@@ -1,0 +1,58 @@
+
+```{r table 2}
+m1 <- apply(summary(mod1)$coefficients, 2, round_)
+m2 <- apply(summary(mod2)$coefficients, 2, round_)
+m3 <- apply(summary(mod3)$coefficients, 2, round_)
+m4 <- apply(summary(mod4)$coefficients, 2, round_)
+makerow_coeftable <- function (i) {
+  str_glue("{rownames(m1)[i]} & {m1[i,1]} {stars.pval(m1[i,4])} & {m2[i,1]} {stars.pval(m2[i,4])} & {m3[i,1]} {stars.pval(m3[i,4])} & {m4[i,1]} {stars.pval(m4[i,4])} \\\\ \n & ({m1[i,2]}) & ({m2[i,2]}) & ({m3[i,2]}) & ({m4[i,2]}) \\\\ \n")
+}
+coeftable <- paste(sapply(1:nrow(m1), makerow_coeftable), collapse = "")
+```
+\begin{centering}
+\begin{table}[hp]
+\begin{threeparttable}[hp]
+\caption{Multivariate OLS regression results}
+\label{table:2}
+\begin{tabular}{lllll}
+\toprule
+& 
+Overall priority & 
+Carbon tax & 
+Combustion ban & 
+Nuclear power \\
+\midrule
+`r coeftable`
+\midrule
+$n$ & 
+`r nrow(panel.final1)` & 
+`r nrow(panel.final2)` & 
+`r nrow(panel.final3)` &
+`r nrow(panel.final4)` \\
+$R^{2}$ &
+`r round_(summary(mod1)$r.squared)` &
+`r round_(summary(mod2)$r.squared)` &
+`r round_(summary(mod3)$r.squared)` &
+`r round_(summary(mod4)$r.squared)` \\
+\addlinespace
+$\Delta R^{2}$ &
+`r round_(summary(mod1)$r.squared - summary(mod1.co)$r.squared)` &
+`r round_(summary(mod2)$r.squared - summary(mod2.co)$r.squared)` &
+`r round_(summary(mod3)$r.squared - summary(mod3.co)$r.squared)` &
+`r round_(summary(mod4)$r.squared - summary(mod4.co)$r.squared)` \\
+$F$ &
+`r round_(mod1.anova[2,5])` `r stars.pval(mod1.anova[2,6])` &
+`r round_(mod2.anova[2,5])` `r stars.pval(mod2.anova[2,6])` &
+`r round_(mod3.anova[2,5])` `r stars.pval(mod1.anova[2,6])` &
+`r round_(mod4.anova[2,5])` `r stars.pval(mod1.anova[2,6])` \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item Standard errors are reported in parentheses.
+\item $\Delta R^{2}$ and F-test are in comparison to a model containing only the control variables.
+\item *** $p < 0.001$, **  $p < 0.01$, * $p < 0.05$, . $p < 0.1$
+\item Data source: \protect\hyperlink{ref-gles2021}{GLES 2021}.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\end{centering}

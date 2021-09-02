@@ -1,0 +1,10 @@
+*.pdf
+*.md
+*.odt
+*.xlsx
+*.RData
+main.tex
+*.Rproj
+*.RData
+.Rproj.user/
+.Rhistory

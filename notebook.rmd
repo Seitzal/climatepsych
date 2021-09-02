@@ -1,0 +1,584 @@
+# Setup workspace
+```{r}
+rm(list = ls())               # Clear environment
+options(scipen = 4)           # Avoid scientific notation
+```
+
+# Import packages
+```{r, warning = FALSE}
+library(foreign)              # SPSS format
+library(tidyverse)            # data cleaning, recoding, and plotting
+library(scales)               # rescaling
+library(Hmisc)                # correlation matrices
+library(psych)                # principal component analysis
+source("customplots.r")       # correlation heatmaps
+```
+
+# Load GLES 2017 data
+
+## Post-election cross-section
+```{r, warning = FALSE}
+cs <- read.spss("ZA6801_de_v4-0-1.sav", to.data.frame = TRUE)
+```
+
+## Panel
+```{r, warning = FALSE}
+panel.w1 <- read.spss("ZA6838_w1to9_sA_v4-0-0.sav", to.data.frame = TRUE)   # Waves 1-9 dataset
+panel.w12 <- read.spss("ZA6838_w12_sA_v4-0-0.sav", to.data.frame = TRUE)    # Wave 12 dataset
+```
+
+```{r}
+panel <- inner_join(panel.w1, panel.w12, by = "lfdn")   # Merge the two datasets
+panel.vars <- data.frame(names(panel))                  # Extract list of variable names (for reference / exploration)
+```
+
+# Derive Variables
+
+## Psychometrics (cross-section data)
+```{r}
+cs <- cs %>%
+  mutate(
+    Openness = (as.numeric(q123e) + 6 - as.numeric(q123j)) / 2,
+    Agreeableness = (as.numeric(q123b) + 6 - as.numeric(q123g)) / 2,
+    Extraversion = (as.numeric(q123f) + 6 - as.numeric(q123a)) / 2,
+    Conscientiousness = (as.numeric(q123c) + 6 - as.numeric(q123h)) / 2,
+    Neuroticism = (as.numeric(q123i) + 6 - as.numeric(q123d)) / 2)
+
+cs.psychometrics <- cs %>% select(Openness, Agreeableness, Extraversion, Conscientiousness, Neuroticism)
+
+boxplot(cs.psychometrics)
+rcorr(as.matrix(cs.psychometrics), type = "spearman")
+plot_corheat(cs.psychometrics, method = "spearman")
+```
+
+## Psychometrics (panel data)
+```{r}
+panel <- panel %>%
+  # Turn factors for TIPI items into numerics and make exception codes negative
+  mutate(
+    kp1_perso_a = as.numeric(kp1_2180a) - 4,
+    kp1_perso_b = as.numeric(kp1_2180b) - 4,
+    kp1_perso_c = as.numeric(kp1_2180c) - 4,
+    kp1_perso_d = as.numeric(kp1_2180d) - 4,
+    kp1_perso_e = as.numeric(kp1_2180e) - 4,
+    kp1_perso_f = as.numeric(kp1_2180f) - 4,
+    kp1_perso_g = as.numeric(kp1_2180g) - 4,
+    kp1_perso_h = as.numeric(kp1_2180h) - 4,
+    kp1_perso_i = as.numeric(kp1_2180i) - 4,
+    kp1_perso_j = as.numeric(kp1_2180j) - 4,
+    kp1_perso_k = as.numeric(kp1_2180k) - 4,
+    kp1_perso_l = as.numeric(kp1_2180l) - 4,
+    kp1_perso_m = as.numeric(kp1_2180m) - 4,
+    kp1_perso_n = as.numeric(kp1_2180n) - 4,
+    kp1_perso_o = as.numeric(kp1_2180o) - 4) %>%
+  # Convert exception codes to NAs
+  mutate(
+    kp1_perso_a = kp1_perso_a %>% replace(kp1_perso_a < 1, NA),
+    kp1_perso_b = kp1_perso_b %>% replace(kp1_perso_b < 1, NA),
+    kp1_perso_c = kp1_perso_c %>% replace(kp1_perso_c < 1, NA),
+    kp1_perso_d = kp1_perso_d %>% replace(kp1_perso_d < 1, NA),
+    kp1_perso_e = kp1_perso_e %>% replace(kp1_perso_e < 1, NA),
+    kp1_perso_f = kp1_perso_f %>% replace(kp1_perso_f < 1, NA),
+    kp1_perso_g = kp1_perso_g %>% replace(kp1_perso_g < 1, NA),
+    kp1_perso_h = kp1_perso_h %>% replace(kp1_perso_h < 1, NA),
+    kp1_perso_i = kp1_perso_i %>% replace(kp1_perso_i < 1, NA),
+    kp1_perso_j = kp1_perso_b %>% replace(kp1_perso_j < 1, NA),
+    kp1_perso_k = kp1_perso_k %>% replace(kp1_perso_k < 1, NA),
+    kp1_perso_l = kp1_perso_l %>% replace(kp1_perso_l < 1, NA),
+    kp1_perso_m = kp1_perso_b %>% replace(kp1_perso_m < 1, NA),
+    kp1_perso_n = kp1_perso_n %>% replace(kp1_perso_n < 1, NA),
+    kp1_perso_o = kp1_perso_o %>% replace(kp1_perso_o < 1, NA)) %>%
+  # Calculate TIPI scale values
+  mutate(
+    Openness = (kp1_perso_g - kp1_perso_h + 6) / 2,
+    Agreeableness = (kp1_perso_n - kp1_perso_o + 6) / 2,
+    Extraversion = (kp1_perso_b - kp1_perso_a + 6) / 2,
+    Conscientiousness = (kp1_perso_f - kp1_perso_d + 6) / 2,
+    Neuroticism = (kp1_perso_k - kp1_perso_l + 6) / 2) %>%
+  # Turn factor for risk aversion into numeric and make exception codes negative
+  mutate(RiskAversion = as.numeric(kp1_1572) - 4) %>%
+  # Convert exception codes to NAs for risk aversion, invert scale and rescale to 1-5
+  mutate(RiskAversion = (12 - replace(RiskAversion, RiskAversion < 1, NA)) %>% scales::rescale(c(1,5)))
+```
+
+## Climate policy attitudes (panel data)
+```{r}
+panel <- panel %>% 
+  # Turn factors for policy attitudes into numerics and make exception codes negative
+  mutate(
+    Priority = as.numeric(kp12_1290) - 17,
+    CarbonTax = as.numeric(kp12_2880ak) - 17,
+    CombustionBan = as.numeric(kp12_2880w) - 17,
+    Nuclear = as.numeric(kp12_2880u) - 17) %>%
+  # Convert exception codes into NAs
+  mutate(
+    Priority = Priority %>% replace(Priority < 1, NA),
+    CarbonTax = CarbonTax %>% replace(CarbonTax < 1, NA),
+    CombustionBan = CombustionBan %>% replace(CombustionBan < 1, NA),
+    Nuclear = Nuclear %>% replace(Nuclear < 1, NA)) %>%
+  # Invert priority scale and rescale to 1-5
+  mutate(Priority = (8 - Priority) %>% scales::rescale(c(1,5)))
+```
+
+## Controls (panel data)
+```{r}
+panel <- panel %>%
+  # Turn factors for controls into numerics and make exception codes negative
+  mutate(
+    LeftRight12 = as.numeric(kp12_1500) - 17,
+    LeftRight1 = as.numeric(kp1_1500) - 5,
+    School9 = as.numeric(kp9_2320) - 7,
+    School1 = as.numeric(kp1_2320) - 6,
+    SchoolA1 = as.numeric(kpa1_2320) - 6,
+    Female = as.numeric(kpx_2280.x) - 7,
+    Age = 2019 - as.numeric(kpx_2290s.x %>% replace(kpx_2290s.x == "1955 und frueher", "1955"))) %>%
+  # Replace exception codes with NA and merge responses from different waves, always keeping the newest
+  mutate(
+    LeftRight12 = LeftRight12 %>% replace(LeftRight12 < 1, NA),
+    LeftRight1 = LeftRight1 %>% replace(LeftRight1 < 1, NA),
+    School9 = School9 %>% replace(School9 < 1 | School9 == 6, NA),
+    School1 = School1 %>% replace(School1 < 1 | School1 == 6, NA),
+    SchoolA1 = SchoolA1 %>% replace(SchoolA1 < 1 | SchoolA1 == 6, NA)) %>%
+  mutate(
+    LeftRight = ifelse(is.na(LeftRight12), LeftRight1, LeftRight12), # Only use wave 1 if no answer in wave 12
+    Education = ifelse(is.na(School9), ifelse(is.na(School1), SchoolA1, School1), School9)) %>% # Use newest info on school education
+  mutate(Education = Education %>% replace(as.numeric(kp1_2330) == 16 | as.numeric(kpa1_2330) == 16, 6)) # merge school & higher ed.
+```
+
+# Shrink dataframe to relevant variables
+```{r}
+panel.final <- panel %>% select(
+  Openness, Agreeableness, Extraversion, Conscientiousness, Neuroticism, RiskAversion,
+  Priority, CarbonTax, CombustionBan, Nuclear,
+  Age, LeftRight, Female, Education)
+```
+
+# Generate descriptive and bivariate statistics
+
+## Distribution boxplots
+
+### Personality traits
+```{r}
+boxplot(panel.final %>% select(Openness, Agreeableness, Extraversion, Conscientiousness, Neuroticism, RiskAversion))
+```
+
+### Climate policy attitudes
+```{r}
+boxplot(panel.final %>% select(Priority, CarbonTax, CombustionBan, Nuclear))
+```
+
+## Correlation matrix (Pearson product-moment)
+```{r}
+rcorr(as.matrix(panel.final), type = "pearson")
+plot_corheat(panel.final, method = "pearson", lowerhalf = TRUE)
+```
+
+## Correlation matrix (Spearman rank-order)
+```{r}
+rcorr(as.matrix(panel.final), type = "spearman")
+plot_corheat(panel.final, method = "spearman", lowerhalf = TRUE)
+```
+
+# Confirmatory factor analysis
+
+## Ten-item personality inventory (TIPI)
+```{r}
+panel.t10 <- panel %>% select(
+  kp1_perso_a,
+  kp1_perso_b,
+  #kp1_perso_c,
+  kp1_perso_d,
+  #kp1_perso_e,
+  kp1_perso_f,
+  kp1_perso_g,
+  kp1_perso_h,
+  #kp1_perso_i,
+  #kp1_perso_j,
+  kp1_perso_k,
+  kp1_perso_l,
+  #kp1_perso_m,
+  kp1_perso_n,
+  kp1_perso_o)
+pca10 <- principal(panel.t10, nfactors=5, rotate="varimax")
+plot_corheat(panel.t10, lowerhalf = TRUE)
+summary(pca10)
+pca10$loadings
+```
+
+## Fifteen-item inventory
+```{r}
+panel.t15 <- panel %>% select(
+  kp1_perso_a,
+  kp1_perso_b,
+  kp1_perso_c,
+  kp1_perso_d,
+  kp1_perso_e,
+  kp1_perso_f,
+  kp1_perso_g,
+  kp1_perso_h,
+  kp1_perso_i,
+  kp1_perso_j,
+  kp1_perso_k,
+  kp1_perso_l,
+  kp1_perso_m,
+  kp1_perso_n,
+  kp1_perso_o)
+pca15 <- principal(panel.t15, nfactors=5, rotate="varimax")
+plot_corheat(panel.t15, lowerhalf = TRUE)
+summary(pca15)
+pca15$loadings
+```
+
+# Regression models
+
+## DV1: Priority
+
+### Pre-filter data
+```{r}
+panel.final1 <- panel.final %>% select(-c(CarbonTax, CombustionBan, Nuclear)) %>% drop_na()
+nrow(panel.final1)
+```
+
+### OLS models
+
+#### Controls only
+```{r}
+mod1.co <- lm(
+  data = panel.final1,
+  formula = 
+    Priority ~ 
+    Age + Female + LeftRight + Education)
+summary(mod1.co)
+```
+
+#### Full model
+```{r}
+mod1 <- lm(
+  data = panel.final1,
+  formula = 
+    Priority ~ 
+    Openness + Agreeableness + Extraversion + Conscientiousness + Neuroticism + RiskAversion + 
+    Age + Female + LeftRight + Education)
+summary(mod1)
+```
+
+#### Delta R²
+```{r}
+summary(mod1)$r.squared - summary(mod1.co)$r.squared
+```
+
+#### F-test
+```{r}
+mod1.anova <- anova(mod1.co, mod1)
+mod1.anova
+```
+
+### Binary logistic models
+
+#### Controls only
+```{r}
+mod1.log.co <- glm(
+  data = panel.final1 %>% mutate(Priority = as.logical(Priority > 3)),
+  family = "binomial",
+  formula = Priority ~ 
+    Age + Female + LeftRight + Education)
+summary(mod1.log.co)
+```
+
+```{r}
+mod1.log.co.fits <- PseudoR2(mod1.log.co, which = "all")
+mod1.log.co.fits
+```
+
+#### Full model
+```{r}
+mod1.log <- glm(
+  data = panel.final1 %>% mutate(Priority = as.logical(Priority > 3)),
+  family = "binomial",
+  formula = Priority ~ 
+    Openness + Agreeableness + Extraversion + Conscientiousness + Neuroticism + RiskAversion + 
+    Age + Female + LeftRight + Education)
+summary(mod1.log)
+```
+
+```{r}
+mod1.log.fits <- PseudoR2(mod1.log, which = "all")
+mod1.log.fits
+```
+
+#### Delta AIC / BIC
+```{r}
+mod1.log.fits["AIC"] - mod1.log.co.fits["AIC"]
+mod1.log.fits["BIC"] - mod1.log.co.fits["BIC"]
+```
+
+#### Likelihood ratio test
+```{r}
+mod1.log.anova <- anova(mod1.log.co, mod1.log, test = "LRT")
+mod1.log.anova
+```
+
+## DV2: Carbon tax
+
+### Pre-filter data
+```{r}
+panel.final2 <- panel.final %>% select(-c(Priority, CombustionBan, Nuclear)) %>% drop_na()
+nrow(panel.final2)
+```
+
+### OLS models
+
+#### Controls only
+```{r}
+mod2.co <- lm(
+  data = panel.final2,
+  formula = 
+    CarbonTax ~ 
+    Age + Female + LeftRight + Education)
+summary(mod2.co)
+```
+
+#### Full model
+```{r}
+mod2 <- lm(
+  data = panel.final2,
+  formula = 
+    CarbonTax ~ 
+    Openness + Agreeableness + Extraversion + Conscientiousness + Neuroticism + RiskAversion + 
+    Age + Female + LeftRight + Education)
+summary(mod2)
+```
+
+#### Delta R²
+```{r}
+summary(mod2)$r.squared - summary(mod2.co)$r.squared
+```
+
+#### F-test
+```{r}
+mod2.anova <- anova(mod2.co, mod2)
+mod2.anova
+```
+
+### Binary logistic models
+
+#### Controls only
+```{r}
+mod2.log.co <- glm(
+  data = panel.final2 %>% mutate(CarbonTax = as.logical(CarbonTax > 3)),
+  family = "binomial",
+  formula = CarbonTax ~ 
+    Age + Female + LeftRight + Education)
+summary(mod2.log.co)
+```
+
+```{r}
+mod2.log.co.fits <- PseudoR2(mod2.log.co, which = "all")
+mod2.log.co.fits
+```
+
+#### Full model
+```{r}
+mod2.log <- glm(
+  data = panel.final2 %>% mutate(CarbonTax = as.logical(CarbonTax > 3)),
+  family = "binomial",
+  formula = CarbonTax ~ 
+    Openness + Agreeableness + Extraversion + Conscientiousness + Neuroticism + RiskAversion + 
+    Age + Female + LeftRight + Education)
+summary(mod2.log)
+```
+
+```{r}
+mod2.log.fits <- PseudoR2(mod2.log, which = "all")
+mod2.log.fits
+```
+
+#### Delta AIC / BIC
+```{r}
+mod2.log.fits["AIC"] - mod2.log.co.fits["AIC"]
+mod2.log.fits["BIC"] - mod2.log.co.fits["BIC"]
+```
+
+#### Likelihood ratio test
+```{r}
+mod2.log.anova <- anova(mod2.log.co, mod2.log, test = "LRT")
+mod2.log.anova
+```
+
+## DV3: Combustion car ban
+
+### Pre-filter data
+```{r}
+panel.final3 <- panel.final %>% select(-c(Priority, CarbonTax, Nuclear)) %>% drop_na()
+nrow(panel.final3)
+```
+
+### OLS models
+
+#### Controls only
+```{r}
+mod3.co <- lm(
+  data = panel.final3,
+  formula = 
+    CombustionBan ~ 
+    Age + Female + LeftRight + Education)
+summary(mod3.co)
+```
+
+#### Full model
+```{r}
+mod3 <- lm(
+  data = panel.final3,
+  formula = 
+    CombustionBan ~ 
+    Openness + Agreeableness + Extraversion + Conscientiousness + Neuroticism + RiskAversion + 
+    Age + Female + LeftRight + Education)
+summary(mod3)
+```
+
+#### Delta R²
+```{r}
+summary(mod3)$r.squared - summary(mod3.co)$r.squared
+```
+
+#### F-test
+```{r}
+mod3.anova <- anova(mod3.co, mod3)
+mod3.anova
+```
+
+### Binary logistic models
+
+#### Controls only
+```{r}
+mod3.log.co <- glm(
+  data = panel.final3 %>% mutate(CombustionBan = as.logical(CombustionBan > 3)),
+  family = "binomial",
+  formula = CombustionBan ~ 
+    Age + Female + LeftRight + Education)
+summary(mod3.log.co)
+```
+
+```{r}
+mod3.log.co.fits <- PseudoR2(mod3.log.co, which = "all")
+mod3.log.co.fits
+```
+
+#### Full model
+```{r}
+mod3.log <- glm(
+  data = panel.final3 %>% mutate(CombustionBan = as.logical(CombustionBan > 3)),
+  family = "binomial",
+  formula = CombustionBan ~ 
+    Openness + Agreeableness + Extraversion + Conscientiousness + Neuroticism + RiskAversion + 
+    Age + Female + LeftRight + Education)
+summary(mod3.log)
+```
+
+```{r}
+mod3.log.fits <- PseudoR2(mod3.log, which = "all")
+mod3.log.fits
+```
+
+#### Delta AIC / BIC
+```{r}
+mod3.log.fits["AIC"] - mod3.log.co.fits["AIC"]
+mod3.log.fits["BIC"] - mod3.log.co.fits["BIC"]
+```
+
+#### Likelihood ratio test
+```{r}
+mod3.log.anova <- anova(mod3.log.co, mod3.log, test = "LRT")
+mod3.log.anova
+```
+
+## DV4: Nuclear power
+
+### Pre-filter data
+```{r}
+panel.final4 <- panel.final %>% select(-c(Priority, CarbonTax, CombustionBan)) %>% drop_na()
+nrow(panel.final4)
+```
+
+### OLS models
+
+#### Controls only
+```{r}
+mod4.co <- lm(
+  data = panel.final4,
+  formula = 
+    Nuclear ~ 
+    Age + Female + LeftRight + Education)
+summary(mod4.co)
+```
+
+#### Full model
+```{r}
+mod4 <- lm(
+  data = panel.final4,
+  formula = 
+    Nuclear ~ 
+    Openness + Agreeableness + Extraversion + Conscientiousness + Neuroticism + RiskAversion + 
+    Age + Female + LeftRight + Education)
+summary(mod4)
+```
+
+#### Delta R²
+```{r}
+summary(mod4)$r.squared - summary(mod4.co)$r.squared
+```
+
+#### F-test
+```{r}
+mod4.anova <- anova(mod4.co, mod4)
+mod4.anova
+```
+
+### Binary logistic models
+
+#### Controls only
+```{r}
+mod4.log.co <- glm(
+  data = panel.final4 %>% mutate(Nuclear = as.logical(Nuclear > 3)),
+  family = "binomial",
+  formula = Nuclear ~ 
+    Age + Female + LeftRight + Education)
+summary(mod4.log.co)
+```
+
+```{r}
+mod4.log.co.fits <- PseudoR2(mod4.log.co, which = "all")
+mod4.log.co.fits
+```
+
+#### Full model
+```{r}
+mod4.log <- glm(
+  data = panel.final4 %>% mutate(Nuclear = as.logical(Nuclear > 3)),
+  family = "binomial",
+  formula = Nuclear ~ 
+    Openness + Agreeableness + Extraversion + Conscientiousness + Neuroticism + RiskAversion + 
+    Age + Female + LeftRight + Education)
+summary(mod4.log)
+```
+
+```{r}
+mod4.log.fits <- PseudoR2(mod4.log, which = "all")
+mod4.log.fits
+```
+
+#### Delta AIC / BIC
+```{r}
+mod4.log.fits["AIC"] - mod4.log.co.fits["AIC"]
+mod4.log.fits["BIC"] - mod4.log.co.fits["BIC"]
+```
+
+#### Likelihood ratio test
+```{r}
+mod4.log.anova <- anova(mod4.log.co, mod4.log, test = "LRT")
+mod4.log.anova
+```
+
+```{r echo=FALSE}
+save(file = "results.RData", list = setdiff(ls(), c("panel", "panel.w1", "panel.w12")))
+```

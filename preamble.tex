@@ -1,0 +1,12 @@
+\usepackage[english]{babel}                                     % Lokalisierung
+
+\usepackage[T1]{fontenc}                                        % Hyphenation
+
+\usepackage{setspace}                                           % Zeilanabstände
+
+\usepackage{etoolbox}                                           % Formatierungsregeln
+
+\AtBeginEnvironment{quote}{\singlespace\vspace{-\topsep}\small} % Schönere Blockzitate
+\AtEndEnvironment{quote}{\vspace{-\topsep}\endsinglespace}
+
+\interfootnotelinepenalty=10000                                 % Bitte keine Fußnoten über Seiten brechen

@@ -1,0 +1,40 @@
+
+```{r table 1}
+makerow_cortable <- function(varname) {
+  c1 <- cor.test(panel.final[[varname]], panel.final$Priority)
+  c2 <- cor.test(panel.final[[varname]], panel.final$CarbonTax)
+  c3 <- cor.test(panel.final[[varname]], panel.final$CombustionBan)
+  c4 <- cor.test(panel.final[[varname]], panel.final$Nuclear)
+  str_glue("{round_(c1$estimate)} {stars.pval(c1$p.value)} & {round_(c2$estimate)} {stars.pval(c2$p.value)} & {round_(c3$estimate)} {stars.pval(c3$p.value)} & {round_(c4$estimate)} {stars.pval(c4$p.value)} \\\\ \n & \\footnotesize({round_(c1$statistic)}, {c1$parameter}) & \\footnotesize({round_(c2$statistic)}, {c2$parameter}) & \\footnotesize({round_(c3$statistic)}, {c3$parameter}) & \\footnotesize({round_(c4$statistic)}, {c4$parameter})")
+}
+```
+\begin{centering}
+\begin{table}[h]
+\begin{threeparttable}[h]
+\caption{Bivariate correlations of personality traits and environmental attitudes}
+\label{table:1}
+\begin{tabular}{lllll}
+\toprule
+& 
+Overall priority & 
+Carbon tax & 
+Combustion ban & 
+Nuclear power \\
+\midrule
+Openness & `r makerow_cortable("Openness")` \\
+Agreeableness & `r makerow_cortable("Agreeableness")` \\
+Extraversion & `r makerow_cortable("Extraversion")` \\
+Conscientiousness & `r makerow_cortable("Conscientiousness")` \\
+Neuroticism & `r makerow_cortable("Neuroticism")` \\
+Risk Aversion & `r makerow_cortable("RiskAversion")` \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item Estimates using Pearson's product-moment correlation.
+\item t-values and degrees of freedom are reported in parentheses.
+\item *** $p < 0.001$, **  $p < 0.01$, * $p < 0.05$, . $p < 0.1$. 
+\item Data source: \protect\hyperlink{ref-gles2021}{GLES 2021}.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\end{centering}
