@@ -1,0 +1,41 @@
+
+```{r}
+makerow_pca10 <- function (i) {
+  str_glue("{round_(pca10$loadings[i,1])} & {round_(pca10$loadings[i,2])} & {round_(pca10$loadings[i,5])} & {round_(pca10$loadings[i,4])} & {round_(pca10$loadings[i,3])}")
+}
+```
+
+\begin{table}[htp]
+\centering
+\begin{threeparttable}[htp]
+\caption{Principal component loadings for 10 personality items}
+\label{table:3}
+\begin{tabular}{lrrrrr}
+\toprule
+&
+PC1 &
+PC2 &
+PC3 &
+PC4 &
+PC5 \\
+\midrule
+Item A (Extraversion) & `r makerow_pca10(1)` \\
+Item B ($\neg$Extraversion) & `r makerow_pca10(2)` \\
+Item D ($\neg$Conscientiousness) & `r makerow_pca10(3)` \\
+Item F (Conscientiousness) & `r makerow_pca10(4)` \\
+Item G (Openness) & `r makerow_pca10(5)` \\
+Item H ($\neg$Openness)& `r makerow_pca10(6)` \\
+Item K (Neuroticism) & `r makerow_pca10(7)` \\
+Item L ($\neg$Neuroticism) & `r makerow_pca10(8)` \\
+Item N (Agreeableness) & `r makerow_pca10(9)` \\
+Item O ($\neg$Agreeableness) & `r makerow_pca10(10)` \\
+\midrule
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item Rotation method: Varimax. Number of components forced to 5. 
+\item Total explained variance: `r round(pca10$Vaccounted[3,5] * 100, digits = 2)` \%.
+\item Data source: \protect\hyperlink{ref-gles2021}{GLES 2021}.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}

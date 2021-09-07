@@ -1,0 +1,44 @@
+```{r}
+makerow_pca15 <- function (i) {
+  str_glue("{round_(pca15$loadings[i,1])} & {round_(pca15$loadings[i,2])} & {round_(pca15$loadings[i,4])} & {round_(pca15$loadings[i,3])} & {round_(pca15$loadings[i,5])}")
+}
+```
+\begin{table}[hp]
+\centering
+\begin{threeparttable}[hp]
+\caption{Principal component loadings for all 15 personality items}
+\label{table:4}
+\begin{tabular}{lrrrrr}
+\toprule
+&
+PC1 &
+PC2 &
+PC3 &
+PC4 &
+PC5 \\
+\midrule
+Item A (Extraversion) & `r makerow_pca15(1)` \\
+Item B ($\neg$Extraversion) & `r makerow_pca15(2)` \\
+Item C (Extraversion) & `r makerow_pca15(3)` \\
+Item D ($\neg$Conscientiousness) & `r makerow_pca15(4)` \\
+Item E (Conscientiousness) & `r makerow_pca15(5)` \\
+Item F (Conscientiousness) & `r makerow_pca15(6)` \\
+Item G (Openness) & `r makerow_pca15(7)` \\
+Item H ($\neg$Openness)& `r makerow_pca15(8)` \\
+Item I (Openness)& `r makerow_pca15(9)` \\
+Item J (Neuroticism) & `r makerow_pca15(10)` \\
+Item K (Neuroticism) & `r makerow_pca15(11)` \\
+Item L ($\neg$Neuroticism) & `r makerow_pca15(12)` \\
+Item M ($\neg$Agreeableness) & `r makerow_pca15(13)` \\
+Item N (Agreeableness) & `r makerow_pca15(14)` \\
+Item O ($\neg$Agreeableness) & `r makerow_pca15(15)` \\
+\midrule
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item Rotation method: Varimax. Number of components forced to 5. 
+\item Total explained variance: `r round(pca15$Vaccounted[3,5] * 100, digits = 2)` \%.
+\item Data source: \protect\hyperlink{ref-gles2021}{GLES 2021}.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
