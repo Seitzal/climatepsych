@@ -1,13 +1,15 @@
 
-```{r table 2}
+```{r}
 m1 <- apply(summary(mod1)$coefficients, 2, round_)
 m2 <- apply(summary(mod2)$coefficients, 2, round_)
 m3 <- apply(summary(mod3)$coefficients, 2, round_)
 m4 <- apply(summary(mod4)$coefficients, 2, round_)
 makerow_coeftable <- function (i) {
-  str_glue("{rownames(m1)[i]} & {m1[i,1]} {stars.pval(m1[i,4])} & {m2[i,1]} {stars.pval(m2[i,4])} & {m3[i,1]} {stars.pval(m3[i,4])} & {m4[i,1]} {stars.pval(m4[i,4])} \\\\ \n & ({m1[i,2]}) & ({m2[i,2]}) & ({m3[i,2]}) & ({m4[i,2]}) \\\\ \n")
+  str_glue("{m1[i,1]} {stars.pval(m1[i,4])} & {m2[i,1]} {stars.pval(m2[i,4])} & {m3[i,1]} {stars.pval(m3[i,4])} & {m4[i,1]} {stars.pval(m4[i,4])}")
 }
-coeftable <- paste(sapply(1:nrow(m1), makerow_coeftable), collapse = "")
+makerow_errtable <- function (i) {
+  str_glue("({m1[i,2]}) & ({m2[i,2]}) & ({m3[i,2]}) & ({m4[i,2]})")
+}
 ```
 \begin{centering}
 \begin{table}[hp]
@@ -22,7 +24,20 @@ Carbon tax &
 Combustion ban & 
 Nuclear power \\
 \midrule
-`r coeftable`
+Openness & `r makerow_coeftable(2)` \\ & `r makerow_errtable(2)` \\
+Agreeableness & `r makerow_coeftable(3)` \\ & `r makerow_errtable(3)` \\
+Extraversion & `r makerow_coeftable(4)` \\ & `r makerow_errtable(4)` \\
+Conscientiousness & `r makerow_coeftable(5)` \\ & `r makerow_errtable(5)` \\
+Neuroticism & `r makerow_coeftable(6)` \\ & `r makerow_errtable(6)` \\
+Risk Aversion & `r makerow_coeftable(7)` \\ & `r makerow_errtable(7)` \\
+\addlinespace
+Age & `r makerow_coeftable(8)` \\ & `r makerow_errtable(8)` \\
+Gender & `r makerow_coeftable(9)` \\ & `r makerow_errtable(9)` \\
+Left-Right Orientation & `r makerow_coeftable(10)` \\ & `r makerow_errtable(10)` \\
+Education & `r makerow_coeftable(11)` \\ & `r makerow_errtable(11)` \\
+Household Income & `r makerow_coeftable(12)` \\ & `r makerow_errtable(12)` \\
+\addlinespace
+Intercept & `r makerow_coeftable(1)` \\ & `r makerow_errtable(1)` \\
 \midrule
 $n$ & 
 `r nrow(panel.final1)` & 

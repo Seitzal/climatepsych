@@ -11,11 +11,11 @@ library(tidyverse)            # data cleaning, recoding, and plotting
 library(scales)               # rescaling
 library(Hmisc)                # correlation matrices
 library(psych)                # principal component analysis
+library(DescTools)            # logistic regression fit statistics
 source("customplots.r")       # correlation heatmaps
 ```
 
 # Load GLES 2016-2020 panel data
-
 ```{r, warning = FALSE}
 panel.w1 <- read.spss("ZA6838_w1to9_sA_v4-0-0.sav", to.data.frame = TRUE)   # Waves 1-9 dataset
 panel.w12 <- read.spss("ZA6838_w12_sA_v4-0-0.sav", to.data.frame = TRUE)    # Wave 12 dataset
@@ -107,19 +107,26 @@ panel <- panel %>%
     School9 = as.numeric(kp9_2320) - 7,
     School1 = as.numeric(kp1_2320) - 6,
     SchoolA1 = as.numeric(kpa1_2320) - 6,
-    Female = as.numeric(kpx_2280.x) - 7,
-    Age = 2019 - as.numeric(kpx_2290s.x %>% replace(kpx_2290s.x == "1955 und frueher", "1955"))) %>%
-  # Replace exception codes with NA and merge responses from different waves, always keeping the newest
+    Gender = as.numeric(kpx_2280.x) - 7,
+    Age = 2019 - as.numeric(kpx_2290s.x %>% replace(kpx_2290s.x == "1955 und frueher", "1955")),
+    Income1 = as.numeric(kp1_2591) - 6,
+    IncomeA1 = as.numeric(kpa1_2591) - 6,) %>%
+  # Replace exception codes with NA
   mutate(
     LeftRight12 = LeftRight12 %>% replace(LeftRight12 < 1, NA),
     LeftRight1 = LeftRight1 %>% replace(LeftRight1 < 1, NA),
     School9 = School9 %>% replace(School9 < 1 | School9 == 6, NA),
     School1 = School1 %>% replace(School1 < 1 | School1 == 6, NA),
-    SchoolA1 = SchoolA1 %>% replace(SchoolA1 < 1 | SchoolA1 == 6, NA)) %>%
+    SchoolA1 = SchoolA1 %>% replace(SchoolA1 < 1 | SchoolA1 == 6, NA),
+    Income1 = Income1 %>% replace(Income1 < 1, NA),
+    IncomeA1 = IncomeA1 %>% replace(IncomeA1 < 1, NA)) %>%
+  # merge responses from different waves, always keeping the newest
   mutate(
-    LeftRight = ifelse(is.na(LeftRight12), LeftRight1, LeftRight12), # Only use wave 1 if no answer in wave 12
-    Education = ifelse(is.na(School9), ifelse(is.na(School1), SchoolA1, School1), School9)) %>% # Use newest info on school education
-  mutate(Education = Education %>% replace(as.numeric(kp1_2330) == 16 | as.numeric(kpa1_2330) == 16, 6)) # merge school & higher ed.
+    LeftRight = ifelse(is.na(LeftRight12), LeftRight1, LeftRight12),
+    Education = ifelse(is.na(School9), ifelse(is.na(School1), SchoolA1, School1), School9),
+    Income = ifelse(is.na(IncomeA1), Income1, IncomeA1)) %>%
+  # merge school & higher education into one scale
+  mutate(Education = Education %>% replace(as.numeric(kp1_2330) == 16 | as.numeric(kpa1_2330) == 16, 6)) 
 ```
 
 # Shrink dataframe to relevant variables
@@ -127,7 +134,7 @@ panel <- panel %>%
 panel.final <- panel %>% select(
   Openness, Agreeableness, Extraversion, Conscientiousness, Neuroticism, RiskAversion,
   Priority, CarbonTax, CombustionBan, Nuclear,
-  Age, LeftRight, Female, Education)
+  Age, LeftRight, Gender, Education, Income)
 ```
 
 # Descriptive and bivariate statistics
@@ -156,9 +163,9 @@ rcorr(as.matrix(panel.final), type = "spearman")
 plot_corheat(panel.final, method = "spearman", lowerhalf = TRUE)
 ```
 
-# Confirmatory factor analysis
+# Principal component analysis
 
-## Ten-item personality inventory (TIPI)
+## Ten-item personality inventory (TIPI): 10 traits, 5 factors
 ```{r}
 panel.t10 <- panel %>% select(
   kp1_perso_a,
@@ -182,7 +189,7 @@ summary(pca10)
 pca10$loadings
 ```
 
-## Fifteen-item inventory
+## TIPI + 5 additional items: 15 traits
 ```{r}
 panel.t15 <- panel %>% select(
   kp1_perso_a,
@@ -224,7 +231,7 @@ mod1.co <- lm(
   data = panel.final1,
   formula = 
     Priority ~ 
-    Age + Female + LeftRight + Education)
+    Age + Gender + LeftRight + Education + Income)
 summary(mod1.co)
 ```
 
@@ -235,7 +242,7 @@ mod1 <- lm(
   formula = 
     Priority ~ 
     Openness + Agreeableness + Extraversion + Conscientiousness + Neuroticism + RiskAversion + 
-    Age + Female + LeftRight + Education)
+    Age + Gender + LeftRight + Education + Income)
 summary(mod1)
 ```
 
@@ -258,7 +265,7 @@ mod1.log.co <- glm(
   data = panel.final1 %>% mutate(Priority = as.logical(Priority > 3)),
   family = "binomial",
   formula = Priority ~ 
-    Age + Female + LeftRight + Education)
+    Age + Gender + LeftRight + Education + Income)
 summary(mod1.log.co)
 ```
 
@@ -274,7 +281,7 @@ mod1.log <- glm(
   family = "binomial",
   formula = Priority ~ 
     Openness + Agreeableness + Extraversion + Conscientiousness + Neuroticism + RiskAversion + 
-    Age + Female + LeftRight + Education)
+    Age + Gender + LeftRight + Education + Income)
 summary(mod1.log)
 ```
 
@@ -289,9 +296,9 @@ mod1.log.fits["AIC"] - mod1.log.co.fits["AIC"]
 mod1.log.fits["BIC"] - mod1.log.co.fits["BIC"]
 ```
 
-#### Likelihood ratio test
+#### Chi-square difference test
 ```{r}
-mod1.log.anova <- anova(mod1.log.co, mod1.log, test = "LRT")
+mod1.log.anova <- anova(mod1.log.co, mod1.log, test = "Chisq")
 mod1.log.anova
 ```
 
@@ -311,7 +318,7 @@ mod2.co <- lm(
   data = panel.final2,
   formula = 
     CarbonTax ~ 
-    Age + Female + LeftRight + Education)
+    Age + Gender + LeftRight + Education + Income)
 summary(mod2.co)
 ```
 
@@ -322,7 +329,7 @@ mod2 <- lm(
   formula = 
     CarbonTax ~ 
     Openness + Agreeableness + Extraversion + Conscientiousness + Neuroticism + RiskAversion + 
-    Age + Female + LeftRight + Education)
+    Age + Gender + LeftRight + Education + Income)
 summary(mod2)
 ```
 
@@ -345,7 +352,7 @@ mod2.log.co <- glm(
   data = panel.final2 %>% mutate(CarbonTax = as.logical(CarbonTax > 3)),
   family = "binomial",
   formula = CarbonTax ~ 
-    Age + Female + LeftRight + Education)
+    Age + Gender + LeftRight + Education + Income)
 summary(mod2.log.co)
 ```
 
@@ -361,7 +368,7 @@ mod2.log <- glm(
   family = "binomial",
   formula = CarbonTax ~ 
     Openness + Agreeableness + Extraversion + Conscientiousness + Neuroticism + RiskAversion + 
-    Age + Female + LeftRight + Education)
+    Age + Gender + LeftRight + Education + Income)
 summary(mod2.log)
 ```
 
@@ -376,9 +383,9 @@ mod2.log.fits["AIC"] - mod2.log.co.fits["AIC"]
 mod2.log.fits["BIC"] - mod2.log.co.fits["BIC"]
 ```
 
-#### Likelihood ratio test
+#### Chi-square difference test
 ```{r}
-mod2.log.anova <- anova(mod2.log.co, mod2.log, test = "LRT")
+mod2.log.anova <- anova(mod2.log.co, mod2.log, test = "Chisq")
 mod2.log.anova
 ```
 
@@ -398,7 +405,7 @@ mod3.co <- lm(
   data = panel.final3,
   formula = 
     CombustionBan ~ 
-    Age + Female + LeftRight + Education)
+    Age + Gender + LeftRight + Education + Income)
 summary(mod3.co)
 ```
 
@@ -409,7 +416,7 @@ mod3 <- lm(
   formula = 
     CombustionBan ~ 
     Openness + Agreeableness + Extraversion + Conscientiousness + Neuroticism + RiskAversion + 
-    Age + Female + LeftRight + Education)
+    Age + Gender + LeftRight + Education + Income)
 summary(mod3)
 ```
 
@@ -432,7 +439,7 @@ mod3.log.co <- glm(
   data = panel.final3 %>% mutate(CombustionBan = as.logical(CombustionBan > 3)),
   family = "binomial",
   formula = CombustionBan ~ 
-    Age + Female + LeftRight + Education)
+    Age + Gender + LeftRight + Education + Income)
 summary(mod3.log.co)
 ```
 
@@ -448,7 +455,7 @@ mod3.log <- glm(
   family = "binomial",
   formula = CombustionBan ~ 
     Openness + Agreeableness + Extraversion + Conscientiousness + Neuroticism + RiskAversion + 
-    Age + Female + LeftRight + Education)
+    Age + Gender + LeftRight + Education + Income)
 summary(mod3.log)
 ```
 
@@ -463,9 +470,9 @@ mod3.log.fits["AIC"] - mod3.log.co.fits["AIC"]
 mod3.log.fits["BIC"] - mod3.log.co.fits["BIC"]
 ```
 
-#### Likelihood ratio test
+#### Chi-square difference test
 ```{r}
-mod3.log.anova <- anova(mod3.log.co, mod3.log, test = "LRT")
+mod3.log.anova <- anova(mod3.log.co, mod3.log, test = "Chisq")
 mod3.log.anova
 ```
 
@@ -485,7 +492,7 @@ mod4.co <- lm(
   data = panel.final4,
   formula = 
     Nuclear ~ 
-    Age + Female + LeftRight + Education)
+    Age + Gender + LeftRight + Education + Income)
 summary(mod4.co)
 ```
 
@@ -496,7 +503,7 @@ mod4 <- lm(
   formula = 
     Nuclear ~ 
     Openness + Agreeableness + Extraversion + Conscientiousness + Neuroticism + RiskAversion + 
-    Age + Female + LeftRight + Education)
+    Age + Gender + LeftRight + Education + Income)
 summary(mod4)
 ```
 
@@ -519,7 +526,7 @@ mod4.log.co <- glm(
   data = panel.final4 %>% mutate(Nuclear = as.logical(Nuclear > 3)),
   family = "binomial",
   formula = Nuclear ~ 
-    Age + Female + LeftRight + Education)
+    Age + Gender + LeftRight + Education + Income)
 summary(mod4.log.co)
 ```
 
@@ -535,7 +542,7 @@ mod4.log <- glm(
   family = "binomial",
   formula = Nuclear ~ 
     Openness + Agreeableness + Extraversion + Conscientiousness + Neuroticism + RiskAversion + 
-    Age + Female + LeftRight + Education)
+    Age + Gender + LeftRight + Education + Income)
 summary(mod4.log)
 ```
 
@@ -550,9 +557,9 @@ mod4.log.fits["AIC"] - mod4.log.co.fits["AIC"]
 mod4.log.fits["BIC"] - mod4.log.co.fits["BIC"]
 ```
 
-#### Likelihood ratio test
+#### Chi-square difference test
 ```{r}
-mod4.log.anova <- anova(mod4.log.co, mod4.log, test = "LRT")
+mod4.log.anova <- anova(mod4.log.co, mod4.log, test = "Chisq")
 mod4.log.anova
 ```
 
