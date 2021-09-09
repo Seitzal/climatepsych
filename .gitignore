@@ -1,5 +1,5 @@
 *.pdf
-*.md
+notes.md
 *.odt
 *.xlsx
 *.RData
