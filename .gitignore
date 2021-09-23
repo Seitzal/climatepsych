@@ -1,4 +1,6 @@
 *.pdf
+*.aux
+*.toc
 notes.md
 *.odt
 *.xlsx

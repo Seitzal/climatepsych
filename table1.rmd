@@ -9,8 +9,8 @@ makerow_cortable <- function(varname) {
 }
 ```
 \begin{centering}
-\begin{table}[h]
-\begin{threeparttable}[h]
+\begin{table}[ht]
+\begin{threeparttable}[ht]
 \caption{Bivariate correlations of personality traits and environmental attitudes}
 \label{table:1}
 \begin{tabular}{lllll}
