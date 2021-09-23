@@ -66,7 +66,7 @@ $F$ &
 \item Standard errors are reported in parentheses.
 \item $\Delta R^{2}$ and F-test are in comparison to a model containing only the control variables.
 \item *** $p < 0.001$, **  $p < 0.01$, * $p < 0.05$, . $p < 0.1$
-\item Data source: \protect\hyperlink{ref-gles2021}{GLES 2021}.
+\item Data source: \protect\hyperlink{ref-gles2021}{GLES (2021)}
 \end{tablenotes}
 \end{threeparttable}
 \end{table}

@@ -33,7 +33,7 @@ Risk Aversion & `r makerow_cortable("RiskAversion")` \\
 \item Estimates using Pearson's product-moment correlation.
 \item t-values and degrees of freedom are reported in parentheses.
 \item *** $p < 0.001$, **  $p < 0.01$, * $p < 0.05$, . $p < 0.1$. 
-\item Data source: \protect\hyperlink{ref-gles2021}{GLES 2021}.
+\item Data source: \protect\hyperlink{ref-gles2021}{GLES (2021)}
 \end{tablenotes}
 \end{threeparttable}
 \end{table}

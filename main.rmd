@@ -105,21 +105,24 @@ Finally, Risk Aversion is the only indicator included in this study that has not
 
 ## 2.2 Dataset and methods
 
-To test the hypotheses, I analysed a sample of 9787 adult German citizens collected between 2016 and 2020 for the German Longitudinal Election Study panel [@gles2021]. After processing and removal of missing values, the sample size ranged between 6985 and 6993 for the different dependent variables. Participants were asked to state their opinion on the three policy proposals (carbon tax, combustion ban, nuclear power) on a 5-point Likert scale, and their prioritization between fighting climate change and achieving economic growth on a 7-point scale, which was linearly rescaled to a 1--5 interval for better comparability. To measure the Big Five, the GLES survey contained a battery of 15 personality questions, but only 10 of these are listed in the questionnaire documentation's table of contents. These 10 items broadly correspond to those of the Ten-Item Personality Indicator (TIPI) developed by @gosling2003. Both 10-item and 15-item instruments have previously been used to measure the Big Five and have exhibited good inter-rater reliability, while their performance in confirmatory factor analyses has been mixed [@lang2011; @gerlitz2005; @gosling2003]. In this case, both the 10-item and 15-item inventory performed equally mediocrely when subjected to confirmatory principal component analyses (see appendix B, tables \ref{table:3} and \ref{table:4}). I decided to use the 10-item version, as it is better documented and more parsimonious, and the 15-item version does not appear to improve on its flaws, at least in the GLES sample. For each factor, a positive and an inverted negative item were asked, using 5-point Likert scales, the mean of which became the trait score. In addition, a simple self-assessment of Risk Aversion was included. To test associations, I first computed bivariate product-moment correlations and then applied ordinary least squares regression, controlling for age, gender, self-assessed left-right orientation, formal education level, and net household income bracket. As an added robustness check, I also replicated the regression analysis using a binary logit model, coding responses above the middle category as positive for the dependent variables. To test the null hypothesis, I additionally computed null models, which contained only the intercept and control variables, but none of the personality indicators.
+To test the hypotheses, I analysed a sample of 9787 adult German citizens collected between 2016 and 2020 for the German Longitudinal Election Study panel [@gles2021]. After processing and removal of missing values, the sample size ranged between 6985 and 6993 for the different dependent variables. Participants were asked to state their opinion on the three policy proposals (carbon tax, combustion ban, nuclear power) on a 5-point Likert scale, and their prioritization between fighting climate change and achieving economic growth on a 7-point scale, which was linearly rescaled to a 1--5 interval for better comparability. To measure the Big Five, a positive and an inverted negative item were asked for each factor, using 5-point Likert scales, the mean of which became the trait score (cf. Appendix B). In addition, a simple self-assessment of Risk Aversion was included. To test associations, I first computed bivariate product-moment correlations and then applied ordinary least squares regression, controlling for age, gender, self-assessed left-right orientation, formal education level, and net household income bracket. As an added robustness check, I also replicated the regression analysis using a binary logit model, coding responses above the middle category as positive for the dependent variables. To test the null hypothesis, I additionally computed null models, which contained only the intercept and control variables, but none of the personality indicators.
 
 ## 2.3 Results and discussion
-
-All six personality indicators show significant bivariate correlations with overall priority, with positive associations for Openness, Agreeableness, Neuroticism and Risk Aversion, and negative ones for Extraversion and Conscientiousness (cf. Table \ref{table:1}). Results are similar for both the carbon tax and combustion engine ban, except that Agreeableness is not significantly correlated with either, while their correlations with Risk Aversion are negative. As expected, results are notably different for support of nuclear power, which is negatively associated with Opennness, Agreeableness, Neuroticism, and Risk Aversion. Notably, these correlations are the exact opposites of those visible for general priority of climate change, suggesting that among German citizens, the latter is part of a more general environmentalist orientation which is not restricted to climate change, and also includes opposition to nuclear power.
 
 ```{r Table 1, child = 'table1.rmd'}
 ```
 
-Moving from bivariate to multivariate results and introducing controls for relevant socio-demographic characteristics, these results show remarkable stability. As shown in tables \ref{table:2} and \ref{table:5}, residual sum-of-squares F-tests and $\chi^{2}$ difference tests are highly significant for all eight regression models in comparison to the null models, so the null hypothesis can be confidently rejected. However, $R^{2}$ values, both total and added, are quite low for all models, and even lower for the policy questions than for general priority. This is unsurprising given that the models do not include information on values, microsociological influences, policy specifics, and context variables like media attention, all of which have a proven influence on political attitudes. Inclusion of those variables would have been unwise, as some of them are assumed to be intermediaries for the effects of personality, which would then be 'controlled out'. One option to measure personality effects in greater detail while achieving better overall fit would have been to use structural equation modeling (SEM), but this was unfeasible within the constraints of this paper. 
+All six personality indicators show significant bivariate correlations with overall priority, with positive associations for Openness, Agreeableness, Neuroticism and Risk Aversion, and negative ones for Extraversion and Conscientiousness (cf. Table \ref{table:1}). Results are similar for both the carbon tax and combustion engine ban, except that Agreeableness is not significantly correlated with either, while their correlations with Risk Aversion are negative. As expected, results are notably different for support of nuclear power, which is negatively associated with Opennness, Agreeableness, Neuroticism, and Risk Aversion. Notably, these correlations are the exact opposites of those visible for general priority of climate change, suggesting that among German citizens, the latter is part of a more general environmentalist orientation which is not restricted to climate change, and also includes opposition to nuclear power.
+
+Moving from bivariate to multivariate models and introducing controls for relevant socio-demographic characteristics, these results show remarkable stability. As shown in tables \ref{table:2} and \ref{table:3}, residual sum-of-squares F-tests and $\chi^{2}$ difference tests are highly significant for all eight regression models in comparison to the null models, so the null hypothesis can be confidently rejected. However, $R^{2}$ values, both total and added, are quite low for all models, and even lower for the policy questions than for general priority. This is unsurprising given that the models do not include information on values, microsociological influences, policy specifics, and context variables like media attention, all of which have a proven influence on political attitudes. Inclusion of those variables would have been unwise, as some of them are assumed to be intermediaries for the effects of personality, which would then be 'controlled out'. One option to measure personality effects in greater detail while achieving better overall fit would have been to use structural equation modeling (SEM), but this was unfeasible within the constraints of this paper. 
 
 ```{r Table 2, child = 'table2.rmd'}
 ```
 
-Regarding Openness to Experience, the measured associations are all in line with theoretical expectations. Openness appears to have strong positive effects both on the formation of environmentalist political values and on individuals' willingness to support controversial climate policies. Since Openness is negatively associated with support for nuclear power, it can be concluded that these attitudes emerge from a general environmentalist orientation underpinned by self-transcendence and curiosity, rather than a more narrow focus on climate change impacts. However, this conclusion must remain tentative, as the association between Openness and support for nuclear power loses significance in the logit model. Meanwhile, Agreeableness also has a positive effect on general priority, but does not appear to be significantly related to support for either the carbon tax or the combustion ban. This suggests that the sense of environmental connectedness which agreeable individuals have translates into an abstract valuation of the environment, but their support for policies depends on external factors. As expected, agreeable respondents were also strongly opposed to nuclear power, which can be partially attributed to a tendency to follow public opinion, and partially to nature-connectedness causing an aversion towards a technology which produces pollutant waste.
+```{r Table 3, child = 'table3.rmd'}
+```
+
+In line with theoretical expectations, Openness appears to have strong positive effects both on the formation of environmentalist political values and on individuals' willingness to support controversial climate policies. Since Openness is negatively associated with support for nuclear power, it can be concluded that these attitudes emerge from a general environmentalist orientation underpinned by self-transcendence and curiosity, rather than a more narrow focus on climate change impacts. However, this conclusion must remain tentative, as the association between Openness and support for nuclear power loses significance in the logit model. Meanwhile, Agreeableness also has a positive effect on general priority, but does not appear to be significantly related to support for either the carbon tax or the combustion ban. This suggests that the sense of environmental connectedness which agreeable individuals have translates into an abstract valuation of the environment, but their support for policies depends on external factors. As expected, agreeable respondents were also strongly opposed to nuclear power, which can be partially attributed to a tendency to follow public opinion, and partially to nature-connectedness causing an aversion towards a technology which produces pollutant waste.
 
 The results for the factor of Conscientiousness are particularly striking. High Conscientiousness is negatively related to overall prioritization of climate concerns over economic growth and to support for both the carbon tax and combustion engine ban. These results appear especially significant because Openness has previously been strongly linked to high environmental concern. The findings suggest that this concern does not spill over into conscientious people's political attitudes, but are outweighed by something else, probably by concerns about cost and adverse economic impacts. One alternative explanation, that these effects are a result of the link between Conscientiousness and conservatism, appears unlikely, given that I controlled both for Risk Aversion and self-assessed left-right orientation --- which suggests that the real impact of Conscientiousness, including effects mediated by those variables, is even larger. At the same time, Conscientiousness shows a strong positive relationship with support for nuclear power, suggesting that high Conscientiousness does not just cause people to have reservations about sweeping climate preservation policies, but that it is systematically linked to a more general anti-environmentalist political disposition. Taking into account the fact that Conscientiousness has been linked to a focus on self-enhancement values, it can be concluded that people who score high on Conscientiousness see environmental issues as something which has to be addressed outside the political sphere.
 
@@ -135,8 +138,6 @@ These findings hold some implications for policy. First, actors interested in de
 
 More detailed theoretical explanations are required for the results presented here, especially with regard to Risk Aversion and Extraversion. Future research would do well to develop more comprehensive and sophisticated models, including intermediary variables such as personal values and context factors such as media attention, and potentially using more advanced methods, such as structural equation modeling. Doing so could offer a more detailed view on the causal pathways through which personality traits influence environmental attitudes. Finally, this analysis was limited to adult German citizens. However, policy attitudes are highly sensitive to the national political and socio-economic context and the specific design aspects of proposals made by real political actors in the respective countries. Because of this, these results should be replicated in different national or cross-national contexts before they can be taken to be universally applicable.
 
-\newpage
-
 # References
 
 <div id="refs"></div>
@@ -145,19 +146,37 @@ More detailed theoretical explanations are required for the results presented he
 \noindent
 All web sources last accessed on 25 August 2021.
 
-# Appendix A: Replication Notes
+# Appendix A: Measuring the Big Five in the GLES
 
-This paper was written using RMarkdown [@allaire2021]. All statistical computations were performed using R [@rcoreteam2021]. The full source code for the paper, commented R scripts for all included and supplementary computations, and instructions for replication are publicly available as a Git repository at [https://github.com/Seitzal/climatepsych](https://github.com/Seitzal/climatepsych).
-
-\newpage
-
-# Appendix B: Supplementary Tables
-
-```{r Table 3, child = 'table3.rmd'}
-```
+The GLES survey contained a battery of 15 personality questions connected to the Big Five structure, but only 10 of these are listed in the questionnaire documentation's table of contents. These 10 items broadly correspond to those of the Ten-Item Personality Inventory (TIPI) developed by @gosling2003. Both 10-item and 15-item instruments have previously been used to measure the Big Five and have exhibited good inter-rater reliability, while their performance in confirmatory factor analyses has been mixed [@lang2011; @gerlitz2005]. In this case, both the 10-item and 15-item inventory performed equally mediocrely when subjected to confirmatory principal component analyses (cf. tables \ref{table:4} and \ref{table:5}). In both versions, items loaded consistently onto the expected factors for Extraversion (PC1), Openness (PC4), and Neuroticism (PC5), while there was noticeable amount of cross-loading for Agreeableness and Conscientiousness (PC2/3). However, this does not necessarily disqualify the instruments [cf. @gosling2021]. I decided to use the 10-item version, as it is better documented and more parsimonious, and the 15-item version does not appear to offer notable improvements.
 
 ```{r Table 4, child = 'table4.rmd'}
 ```
 
 ```{r Table 5, child = 'table5.rmd'}
 ```
+
+\newpage
+
+\noindent
+Personality items included in the GLES questionnaire [@gles2021 kp1_2180a -- o]:
+
+A) I tend to be somewhat shy and reserved.
+B) I am extroverted and sociable.
+C) I am communicative and talkative.
+D) I am lazy.
+E) I perform tasks very thoroughly.
+F) I work effective and efficiently.
+G) I have an active imagination and am inventive.
+H) I have little artistic interest.
+I) I am inventive and propose new ideas.
+J) I worry a lot.
+K) I easily get nervous and uneasy.
+L) I am relaxed. Stress does not upset me.
+M) Sometimes I am a little rough with others.
+N) I am considerate and friendly with others.
+O) I tend to criticize others.
+
+# Appendix B: Replication Notes
+
+This paper was written using RMarkdown [@allaire2021]. All statistical computations were performed using R [@rcoreteam2021]. The full source code for the paper, commented R scripts for all included and supplementary computations, and instructions for replication are publicly available as a Git repository at [https://github.com/Seitzal/climatepsych](https://github.com/Seitzal/climatepsych).

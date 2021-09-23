@@ -1,41 +1,73 @@
 
 ```{r}
-makerow_pca10 <- function (i) {
-  str_glue("{round_(pca10$loadings[i,1])} & {round_(pca10$loadings[i,2])} & {round_(pca10$loadings[i,5])} & {round_(pca10$loadings[i,4])} & {round_(pca10$loadings[i,3])}")
-}
+m1 <- apply(summary(mod1.log)$coefficients, 2, round_)
+m2 <- apply(summary(mod2.log)$coefficients, 2, round_)
+m3 <- apply(summary(mod3.log)$coefficients, 2, round_)
+m4 <- apply(summary(mod4.log)$coefficients, 2, round_)
 ```
-
-\begin{table}[htp]
-\centering
-\begin{threeparttable}[htp]
-\caption{Principal component loadings for 10 personality items}
+\begin{centering}
+\begin{table}[hp]
+\begin{threeparttable}[hp]
+\caption{Multivariate binary logistic regression results}
 \label{table:3}
-\begin{tabular}{lrrrrr}
+\begin{tabular}{lllll}
 \toprule
-&
-PC1 &
-PC2 &
-PC3 &
-PC4 &
-PC5 \\
+& 
+Overall priority & 
+Carbon tax & 
+Combustion ban & 
+Nuclear power \\
 \midrule
-Item A (Extraversion) & `r makerow_pca10(1)` \\
-Item B ($\neg$Extraversion) & `r makerow_pca10(2)` \\
-Item D ($\neg$Conscientiousness) & `r makerow_pca10(3)` \\
-Item F (Conscientiousness) & `r makerow_pca10(4)` \\
-Item G (Openness) & `r makerow_pca10(5)` \\
-Item H ($\neg$Openness)& `r makerow_pca10(6)` \\
-Item K (Neuroticism) & `r makerow_pca10(7)` \\
-Item L ($\neg$Neuroticism) & `r makerow_pca10(8)` \\
-Item N (Agreeableness) & `r makerow_pca10(9)` \\
-Item O ($\neg$Agreeableness) & `r makerow_pca10(10)` \\
+Openness & `r makerow_coeftable(2)` \\ & `r makerow_errtable(2)` \\
+Agreeableness & `r makerow_coeftable(3)` \\ & `r makerow_errtable(3)` \\
+Extraversion & `r makerow_coeftable(4)` \\ & `r makerow_errtable(4)` \\
+Conscientiousness & `r makerow_coeftable(5)` \\ & `r makerow_errtable(5)` \\
+Neuroticism & `r makerow_coeftable(6)` \\ & `r makerow_errtable(6)` \\
+Risk Aversion & `r makerow_coeftable(7)` \\ & `r makerow_errtable(7)` \\
+\addlinespace
+Age & `r makerow_coeftable(8)` \\ & `r makerow_errtable(8)` \\
+Gender & `r makerow_coeftable(9)` \\ & `r makerow_errtable(9)` \\
+Left-Right Orientation & `r makerow_coeftable(10)` \\ & `r makerow_errtable(10)` \\
+Education & `r makerow_coeftable(11)` \\ & `r makerow_errtable(11)` \\
+Household Income & `r makerow_coeftable(12)` \\ & `r makerow_errtable(12)` \\
+\addlinespace
+Intercept & `r makerow_coeftable(1)` \\ & `r makerow_errtable(1)` \\
 \midrule
+$n$ & 
+`r nrow(panel.final1)` & 
+`r nrow(panel.final2)` & 
+`r nrow(panel.final3)` &
+`r nrow(panel.final4)` \\
+Nagelkerke's $R^{2}$ &
+`r round_(mod1.log.fits["Nagelkerke"])` &
+`r round_(mod2.log.fits["Nagelkerke"])` &
+`r round_(mod3.log.fits["Nagelkerke"])` &
+`r round_(mod4.log.fits["Nagelkerke"])` \\
+\addlinespace
+$\Delta AIC$ &
+`r round_(mod1.log.fits["AIC"] - mod1.log.co.fits["AIC"])` &
+`r round_(mod2.log.fits["AIC"] - mod2.log.co.fits["AIC"])` &
+`r round_(mod3.log.fits["AIC"] - mod3.log.co.fits["AIC"])` &
+`r round_(mod4.log.fits["AIC"] - mod4.log.co.fits["AIC"])` \\
+$\Delta BIC$ &
+`r round_(mod1.log.fits["BIC"] - mod1.log.co.fits["BIC"])` &
+`r round_(mod2.log.fits["BIC"] - mod2.log.co.fits["BIC"])` &
+`r round_(mod3.log.fits["BIC"] - mod3.log.co.fits["BIC"])` &
+`r round_(mod4.log.fits["BIC"] - mod4.log.co.fits["BIC"])` \\
+$\Delta \chi^{2}$ &
+`r round_(mod1.log.anova[2,4])` `r stars.pval(mod1.log.anova[2,5])` &
+`r round_(mod2.log.anova[2,4])` `r stars.pval(mod2.log.anova[2,5])` &
+`r round_(mod3.log.anova[2,4])` `r stars.pval(mod3.log.anova[2,5])` &
+`r round_(mod4.log.anova[2,4])` `r stars.pval(mod4.log.anova[2,5])` \\
 \bottomrule
 \end{tabular}
 \begin{tablenotes}
-\item Rotation method: Varimax. Number of components forced to 5. 
-\item Total explained variance: `r round(pca10$Vaccounted[3,5] * 100, digits = 2)` \%.
-\item Data source: \protect\hyperlink{ref-gles2021}{GLES 2021}.
+\item ``Neither agree nor disagree'' / undecided responses were classified as disagreement.
+\item Standard errors are reported in parentheses.
+\item $\Delta AIC$, $\Delta BIC$, and $\Delta \chi^{2}$ are in comparison to a model containing only the control variables.
+\item *** $p < 0.001$, **  $p < 0.01$, * $p < 0.05$, . $p < 0.1$
+\item Data source: \protect\hyperlink{ref-gles2021}{GLES (2021)}
 \end{tablenotes}
 \end{threeparttable}
 \end{table}
+\end{centering}
