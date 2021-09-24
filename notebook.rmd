@@ -59,19 +59,19 @@ panel <- panel %>%
     kp1_perso_g = kp1_perso_g %>% replace(kp1_perso_g < 1, NA),
     kp1_perso_h = kp1_perso_h %>% replace(kp1_perso_h < 1, NA),
     kp1_perso_i = kp1_perso_i %>% replace(kp1_perso_i < 1, NA),
-    kp1_perso_j = kp1_perso_b %>% replace(kp1_perso_j < 1, NA),
+    kp1_perso_j = kp1_perso_j %>% replace(kp1_perso_j < 1, NA),
     kp1_perso_k = kp1_perso_k %>% replace(kp1_perso_k < 1, NA),
     kp1_perso_l = kp1_perso_l %>% replace(kp1_perso_l < 1, NA),
-    kp1_perso_m = kp1_perso_b %>% replace(kp1_perso_m < 1, NA),
+    kp1_perso_m = kp1_perso_m %>% replace(kp1_perso_m < 1, NA),
     kp1_perso_n = kp1_perso_n %>% replace(kp1_perso_n < 1, NA),
     kp1_perso_o = kp1_perso_o %>% replace(kp1_perso_o < 1, NA)) %>%
   # Calculate TIPI scale values
   mutate(
-    Openness = (kp1_perso_g - kp1_perso_h + 6) / 2,
-    Agreeableness = (kp1_perso_n - kp1_perso_o + 6) / 2,
-    Extraversion = (kp1_perso_b - kp1_perso_a + 6) / 2,
-    Conscientiousness = (kp1_perso_f - kp1_perso_d + 6) / 2,
-    Neuroticism = (kp1_perso_k - kp1_perso_l + 6) / 2) %>%
+    Extraversion =      ( 6 - kp1_perso_a +     kp1_perso_b +     kp1_perso_c ) / 3,
+    Conscientiousness = ( 6 - kp1_perso_d +     kp1_perso_e +     kp1_perso_f ) / 3,
+    Openness =          (     kp1_perso_g + 6 - kp1_perso_h +     kp1_perso_i ) / 3,
+    Neuroticism =       (     kp1_perso_j +     kp1_perso_k + 6 - kp1_perso_l ) / 3,
+    Agreeableness =     ( 6 - kp1_perso_m +     kp1_perso_n + 6 - kp1_perso_o ) / 3) %>%
   # Turn factor for risk aversion into numeric and make exception codes negative
   mutate(RiskAversion = as.numeric(kp1_1572) - 4) %>%
   # Convert exception codes to NAs for risk aversion, invert scale and rescale to 1-5

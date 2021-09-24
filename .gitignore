@@ -1,4 +1,5 @@
 *.pdf
+!main.pdf
 *.aux
 *.toc
 notes.md

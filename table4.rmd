@@ -19,8 +19,8 @@ PC3 &
 PC4 &
 PC5 \\
 \midrule
-Item A (Extraversion) & `r makerow_pca10(1)` \\
-Item B ($\neg$Extraversion) & `r makerow_pca10(2)` \\
+Item A ($\neg$Extraversion) & `r makerow_pca10(1)` \\
+Item B (Extraversion) & `r makerow_pca10(2)` \\
 Item D ($\neg$Conscientiousness) & `r makerow_pca10(3)` \\
 Item F (Conscientiousness) & `r makerow_pca10(4)` \\
 Item G (Openness) & `r makerow_pca10(5)` \\
