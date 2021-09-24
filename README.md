@@ -1,7 +1,7 @@
 # Who Cares about the Climate? Psychological Predictors of Political Environmentalism among German Citizens
 A. Seitz, 2021
 
-[Link to PDF](https://stratus.seitzal.eu/index.php/s/5QZZXPxWkoizY9w)
+[Link to PDF](https://stratus.seitzal.eu/index.php/s/aF7qaCSLEX86imx)
 
 ## Replication instructions
 
